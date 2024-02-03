@@ -3,6 +3,7 @@
 namespace App\Orchid\Layouts\Site;
 
 use App\Models\Site;
+use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -27,12 +28,25 @@ class SiteListTable extends Table
 	{
 		return [
 			TD::make('domain', 'Домен')->cantHide(),
+
 			// TD::make('logo', 'Лого')->defaultHidden(),
+
 			TD::make('created_at', 'Создан')->render(function (Site $site) {
 				return $site->created_at->format('d/m/Y H:i');
 			}),
+
 			TD::make('updated_at', 'Обновлен')->render(function (Site $site) {
 				return $site->created_at->format('d/m/Y H:i');
+			}),
+
+			TD::make('action', 'Действия')->render(function (Site $site) {
+				return ModalToggle::make('Редактировать')
+					->modal('editSite')
+					->method('update')
+					->modalTitle('Редактирование сайта: ' . $site->domain)
+					->asyncParameters([
+						'site' => $site->id
+					]);
 			}),
 		];
 	}

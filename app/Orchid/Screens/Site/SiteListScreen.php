@@ -3,6 +3,7 @@
 namespace App\Orchid\Screens\Site;
 
 use App\Http\Requests\Admin\Site\AdminSiteCreateRequest;
+use App\Http\Requests\Admin\Site\AdminSiteUpdateRequest;
 use App\Models\Site;
 use App\Orchid\Layouts\Site\SiteListTable;
 use Orchid\Attachment\File;
@@ -24,7 +25,6 @@ class SiteListScreen extends Screen
 	public function query(): iterable
 	{
 		return [
-			'site' => Site::find(1),
 			'sites' => Site::paginate(10),
 		];
 	}
@@ -48,7 +48,6 @@ class SiteListScreen extends Screen
 	{
 		return [
 			ModalToggle::make('Создать сайт')->modal('createSite')->method('create'),
-			ModalToggle::make('Редактировать сайт')->modal('editSite')->method('edit'),
 		];
 	}
 
@@ -61,6 +60,7 @@ class SiteListScreen extends Screen
 	{
 		return [
 			SiteListTable::class,
+
 			Layout::modal('createSite', Layout::rows([
 				Input::make('domain')->required()->title('Домен'),
 				// Upload::make('logo')
@@ -73,20 +73,19 @@ class SiteListScreen extends Screen
 			]))->title('Создание сайта')->applyButton('Создать'),
 
 			Layout::modal('editSite', Layout::rows([
+				Input::make('site.id')->type('hidden'),
 				Input::make('site.domain')->required()->title('Домен'),
 				// Input::make('site.domain')->disabled(),
-			]))->title('Редактирование сайта')->applyButton('Редактировать')
+			]))->async('asyncGetSite')->title('Редактирование сайта')->applyButton('Редактировать')
 		];
 	}
 
-	// public function asyncGetSite(Site $site): array
-	// {
-	// 	// $site->load('logo');
-	// 	$site->load('attachment');
-	// 	return [
-	// 		'site' => $site
-	// 	];
-	// }
+	public function asyncGetSite(Site $site): array
+	{
+		return [
+			'site' => $site
+		];
+	}
 
 	// public function upload(AdminSiteCreateRequest $request)
 	// {
@@ -115,5 +114,12 @@ class SiteListScreen extends Screen
 		// );
 
 		Toast::info('Сайт создан');
+	}
+
+	public function update(AdminSiteUpdateRequest $request)
+	{
+		$data = $request->validated();
+		Site::find($request->input('site.id'))->update($data['site']);
+		Toast::info('Сайт обновлен');
 	}
 }
