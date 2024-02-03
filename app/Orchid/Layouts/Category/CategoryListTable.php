@@ -52,7 +52,7 @@ class CategoryListTable extends Table
 					->asyncParameters([
 						'category' => $category->id
 					]);
-			}),
+			})->cantHide(),
 		];
 	}
 }

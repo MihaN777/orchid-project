@@ -3,7 +3,7 @@
 namespace App\Orchid\Screens\Article;
 
 use App\Http\Requests\Admin\Article\AdminArticleCreateRequest;
-use App\Http\Requests\Admin\Article\AdminArticleUpdateRquest;
+use App\Http\Requests\Admin\Article\AdminArticleUpdateRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Orchid\Layouts\Article\ArticleListTable;
@@ -99,7 +99,7 @@ class ArticleListScreen extends Screen
 		Toast::info('Статья создана');
 	}
 
-	public function update(AdminArticleUpdateRquest $request)
+	public function update(AdminArticleUpdateRequest $request)
 	{
 		$data = $request->validated();
 		$data['article']['is_published'] = isset($data['article']['is_published']) ? 1 : 0;

@@ -47,7 +47,7 @@ class SiteListTable extends Table
 					->asyncParameters([
 						'site' => $site->id
 					]);
-			}),
+			})->cantHide(),
 		];
 	}
 }

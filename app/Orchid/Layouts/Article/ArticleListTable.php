@@ -64,7 +64,7 @@ class ArticleListTable extends Table
 					->asyncParameters([
 						'article' => $article->id
 					]);
-			}),
+			})->cantHide(),
 		];
 	}
 }

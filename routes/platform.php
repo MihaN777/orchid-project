@@ -40,15 +40,30 @@ Route::screen('/main', PlatformScreen::class)
 
 // Sites
 Route::screen('sites', SiteListScreen::class)
-	->name('platform.sites');
+	->name('platform.sites')
+	->breadcrumbs(function (Trail $trail) {
+		return $trail
+			->parent('platform.index')
+			->push('Сайты');
+	});
 
 // Categories
 Route::screen('categories', CategoryListScreen::class)
-	->name('platform.categories');
+	->name('platform.categories')
+	->breadcrumbs(function (Trail $trail) {
+		return $trail
+			->parent('platform.index')
+			->push('Категории');
+	});
 
 // Articles
 Route::screen('articles', ArticleListScreen::class)
-	->name('platform.articles');
+	->name('platform.articles')
+	->breadcrumbs(function (Trail $trail) {
+		return $trail
+			->parent('platform.index')
+			->push('Статьи');
+	});
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
