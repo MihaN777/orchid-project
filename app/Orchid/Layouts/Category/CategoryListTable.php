@@ -27,6 +27,9 @@ class CategoryListTable extends Table
 	{
 		return [
 			TD::make('title', 'Название')->cantHide(),
+			TD::make('site_id', 'Домен')->render(function (Category $category) {
+				return $category->site->domain;
+			}),
 			TD::make('is_published', 'Публикация')->render(function (Category $category) {
 				return (bool) $category->is_published ? 'Опубликована' : 'Не опубликована';
 			})->sort(),

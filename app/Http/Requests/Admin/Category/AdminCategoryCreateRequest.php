@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Article;
+namespace App\Http\Requests\Admin\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminArticleCreateRequest extends FormRequest
+class AdminCategoryCreateRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class AdminArticleCreateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'date' => ['required', 'string', 'date_format:Y-m-d'],
-			'category_id' => ['required', 'integer', 'min:1', 'exists:categories,id'],
 			'title' => ['required', 'string', 'max:100'],
-			'text' => ['required', 'string', 'max:2000'],
 			'is_published' => ['nullable', 'string'],
+			'site_id' => ['required', 'integer', 'min:1', 'exists:sites,id'],
 		];
 	}
 
@@ -35,7 +33,6 @@ class AdminArticleCreateRequest extends FormRequest
 		return [
 			'required' => 'Поле :attribute обязательно для заполнения',
 			'integer' => 'Значение поля :attribute должно быть целым числом',
-			'date_format' => 'Не корректный формат данных в поле :attribute',
 			'max' => 'Превышено максимальное значение поля :attribute',
 			'exists' => 'Не корректный идентификатор поля :attribute',
 		];
@@ -44,10 +41,8 @@ class AdminArticleCreateRequest extends FormRequest
 	public function attributes()
 	{
 		return [
-			'date' => 'Дата',
-			'category_id' => 'Категория',
-			'title' => 'Заголовок',
-			'text' => 'Текст',
+			'site_id' => 'Домен',
+			'title' => 'Название',
 			'is_published' => 'Публикация',
 		];
 	}

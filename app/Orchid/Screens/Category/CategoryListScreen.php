@@ -2,10 +2,14 @@
 
 namespace App\Orchid\Screens\Category;
 
+use App\Http\Requests\Admin\Category\AdminCategoryCreateRequest;
 use App\Models\Category;
+use App\Models\Site;
 use App\Orchid\Layouts\Category\CategoryListTable;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -56,13 +60,19 @@ class CategoryListScreen extends Screen
 		return [
 			CategoryListTable::class,
 			Layout::modal('createCategory', Layout::rows([
-				Input::make('title')->required()
+				Relation::make('site_id')->required()->fromModel(Site::class, 'domain')->title('Домен'),
+				Input::make('title')->required()->title('Название'),
+				CheckBox::make('is_published')->title('Публикация'),
 			]))->title('Создание категории')->applyButton('Создать')
 		];
 	}
 
-	public function create()
+	public function create(AdminCategoryCreateRequest $request)
 	{
-		Toast::info('777');
+		$data = $request->validated();
+		$data['is_published'] = $request->boolean('is_published');
+
+		Category::create($data);
+		Toast::info('Категория создана');
 	}
 }

@@ -19,6 +19,7 @@ class Category extends Model
 	protected $fillable = [
 		'title',
 		'is_published',
+		'site_id',
 	];
 
 	protected $allowedSorts = [
