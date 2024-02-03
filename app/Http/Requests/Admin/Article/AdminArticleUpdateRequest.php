@@ -45,6 +45,7 @@ class AdminArticleUpdateRequest extends FormRequest
 	public function attributes()
 	{
 		return [
+			'article.id' => 'Статья',
 			'article.date' => 'Дата',
 			'article.category_id' => 'Категория',
 			'article.title' => 'Заголовок',

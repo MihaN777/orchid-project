@@ -6,11 +6,11 @@ use App\Http\Requests\Admin\Site\AdminSiteCreateRequest;
 use App\Http\Requests\Admin\Site\AdminSiteUpdateRequest;
 use App\Models\Site;
 use App\Orchid\Layouts\Site\SiteListTable;
-use Orchid\Attachment\File;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Picture;
-use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -63,19 +63,23 @@ class SiteListScreen extends Screen
 
 			Layout::modal('createSite', Layout::rows([
 				Input::make('domain')->required()->title('Домен'),
-				// Upload::make('logo')
-				// 	->maxFiles(1)
-				// 	// ->acceptedFiles('.jpg, .png, .svg')
-				// 	->acceptedFiles('image/*')
-				// 	->storage('public')
-				// 	->required()
-				// 	->title('Лого')
+
+				Input::make('logo')
+					->type('file')
+					->acceptedFiles('.jpg, .png, .svg')
+					->required()
+					->title('Лого'),
 			]))->title('Создание сайта')->applyButton('Создать'),
 
 			Layout::modal('editSite', Layout::rows([
 				Input::make('site.id')->type('hidden'),
+
 				Input::make('site.domain')->required()->title('Домен'),
-				// Input::make('site.domain')->disabled(),
+
+				Input::make('site.logo')
+					->type('file')
+					->acceptedFiles('.jpg, .png, .svg')
+					->title('Лого'),
 			]))->async('asyncGetSite')->title('Редактирование сайта')->applyButton('Редактировать')
 		];
 	}
@@ -87,39 +91,53 @@ class SiteListScreen extends Screen
 		];
 	}
 
-	// public function upload(AdminSiteCreateRequest $request)
-	// {
-	// 	$file = new File($request->file('logo'));
-	// 	$attachment = $file->load();
-	// 	return response()->json($attachment);
-	// }
+	private function deleteLogo(?string $path)
+	{
+		if (
+			isset($path) &&
+			Storage::disk('public')->exists($path) &&
+			!Storage::disk('public')->delete($path)
+		) {
+			Log::error(SiteListScreen::class . " [deleteLogo]: Не удалось удалить логотип сайта ({$path})");
+		}
+	}
 
 	public function create(AdminSiteCreateRequest $request)
 	{
-		// dd($request->toArray());
-
 		$data = $request->validated();
+		$data['logo'] = Storage::disk('public')->put(Site::LOGOS_PATH, $data['logo']);
+
 		$site = Site::create($data);
 
-		// $image = $site->attachment()->first();
-
-		// // Get the URL of the file
-		// $image->url();
-
-		// dd($image, $image->url());
-
-		// $site->logo()->syncWithoutDetaching(
-		// 	// $request->input('logo', [])
-		// 	$request->input('logo.attachment', [])
-		// );
-
-		Toast::info('Сайт создан');
+		if (!$site || !($site instanceof Site)) {
+			$this->deleteLogo($data['logo']);
+			throw ValidationException::withMessages(['error' => 'Не удалось записать данные']);
+		} else {
+			Toast::info('Сайт создан');
+		}
 	}
 
 	public function update(AdminSiteUpdateRequest $request)
 	{
 		$data = $request->validated();
-		Site::find($request->input('site.id'))->update($data['site']);
-		Toast::info('Сайт обновлен');
+		$site = Site::find($data['site']['id']);
+
+		if (!$site || !($site instanceof Site)) {
+			throw ValidationException::withMessages(['error' => 'Не удалось найти модель данных']);
+		}
+
+		$oldLogo = $site->logo;
+
+		if (isset($data['site']['logo'])) {
+			$data['site']['logo'] = Storage::disk('public')->put(Site::LOGOS_PATH, $data['site']['logo']);
+		}
+
+		if (!$site->update($data['site'])) {
+			$this->deleteLogo($data['site']['logo']);
+			throw ValidationException::withMessages(['error' => 'Не удалось обновить данные']);
+		} else {
+			$this->deleteLogo($oldLogo);
+			Toast::info('Сайт обновлен');
+		}
 	}
 }

@@ -22,6 +22,7 @@ class AdminCategoryUpdateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
+			'category.id' => ['required', 'integer', 'exists:categories,id'],
 			'category.title' => ['required', 'string', 'max:100'],
 			'category.is_published' => ['nullable', 'string'],
 			'category.site_id' => ['required', 'integer', 'min:1', 'exists:sites,id'],
@@ -41,6 +42,7 @@ class AdminCategoryUpdateRequest extends FormRequest
 	public function attributes()
 	{
 		return [
+			'category.id' => 'Категория',
 			'category.site_id' => 'Домен',
 			'category.title' => 'Название',
 			'category.is_published' => 'Публикация',

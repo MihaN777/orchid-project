@@ -22,9 +22,9 @@ class AdminSiteUpdateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
+			'site.id' => ['required', 'integer', 'exists:sites,id'],
 			'site.domain' => ['required', 'string', 'max:250'],
-			// 'logo' => ['required', 'file', 'image', 'max:1024'],
-			// 'logo' => ['required'],
+			'site.logo' => ['nullable', 'file', 'image:jpg,png,svg', 'max:1024'],
 		];
 	}
 
@@ -32,18 +32,20 @@ class AdminSiteUpdateRequest extends FormRequest
 	{
 		return [
 			'required' => 'Поле :attribute обязательно для заполнения',
-			// 'file' => 'В поле :attribute задан не корректный файл',
-			// 'image' => 'В поле :attribute задано не корректное изображение',
-			'domain.max' => 'Превышено максимальное значение поля :attribute',
-			// 'logo.max' => 'Превышен размер загружаемого файла в поле :attribute',
+			'file' => 'В поле :attribute задан не корректный файл',
+			'image' => 'В поле :attribute задано не корректное изображение',
+			'site.domain.max' => 'Превышено максимальное значение поля :attribute',
+			'site.logo.max' => 'Превышен размер загружаемого файла в поле :attribute',
+			'exists' => 'Не корректный идентификатор поля :attribute',
 		];
 	}
 
 	public function attributes()
 	{
 		return [
+			'site.id' => 'Сайт',
 			'site.domain' => 'Домен',
-			// 'logo' => 'Лого',
+			'site.logo' => 'Лого',
 		];
 	}
 }

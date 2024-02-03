@@ -3,7 +3,9 @@
 namespace App\Orchid\Layouts\Site;
 
 use App\Models\Site;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -29,7 +31,11 @@ class SiteListTable extends Table
 		return [
 			TD::make('domain', 'Домен')->cantHide(),
 
-			// TD::make('logo', 'Лого')->defaultHidden(),
+			TD::make('logo', 'Лого')->render(function (Site $site) {
+				// FIXME :)
+				$img = asset("storage/{$site->logo}");
+				return "<img src=\"{$img}\" style=\"width:200px;\">";
+			}),
 
 			TD::make('created_at', 'Создан')->render(function (Site $site) {
 				return $site->created_at->format('d/m/Y H:i');
