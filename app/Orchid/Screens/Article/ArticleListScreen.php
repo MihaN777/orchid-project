@@ -2,11 +2,15 @@
 
 namespace App\Orchid\Screens\Article;
 
+use App\Http\Requests\Admin\Article\AdminArticleCreateRequest;
 use App\Models\Article;
+use App\Models\Category;
 use App\Orchid\Layouts\Article\ArticleListTable;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -58,15 +62,22 @@ class ArticleListScreen extends Screen
 		return [
 			ArticleListTable::class,
 			Layout::modal('createArticle', Layout::rows([
-				Input::make('title')->required(),
-				TextArea::make('text')->required(),
-				// DateTimer::make('date')->format('Y-m-d')
+				DateTimer::make('date')->format('Y-m-d')->required()->title('Дата'),
+				Relation::make('category_id')->required()->fromModel(Category::class, 'title')->title('Категория'),
+				Input::make('title')->required()->title('Заголовок'),
+				TextArea::make('text')->required()->title('Текст'),
+				CheckBox::make('is_published')->title('Публикация'),
 			]))->title('Создание статьи')->applyButton('Создать')
 		];
 	}
 
-	public function create()
+	public function create(AdminArticleCreateRequest $request)
 	{
-		Toast::info('888');
+		$data = $request->validated();
+		$data['is_published'] = $request->boolean('is_published');
+		$data['user_id'] = auth()->user()->id;
+
+		Article::create($data);
+		Toast::info('Статья создана');
 	}
 }

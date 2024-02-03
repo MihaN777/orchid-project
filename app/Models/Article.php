@@ -17,9 +17,12 @@ class Article extends Model
 	// protected $guarded = false;
 
 	protected $fillable = [
+		'date',
 		'title',
 		'text',
 		'is_published',
+		'category_id',
+		'user_id',
 	];
 
 	protected $allowedSorts = [
