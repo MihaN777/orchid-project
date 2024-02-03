@@ -3,6 +3,7 @@
 namespace App\Orchid\Screens\Article;
 
 use App\Http\Requests\Admin\Article\AdminArticleCreateRequest;
+use App\Http\Requests\Admin\Article\AdminArticleEditRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Orchid\Layouts\Article\ArticleListTable;
@@ -26,7 +27,7 @@ class ArticleListScreen extends Screen
 	public function query(): iterable
 	{
 		return [
-			'articles' => Article::filters()->paginate(10)
+			'articles' => Article::filters()->paginate(10),
 		];
 	}
 
@@ -48,7 +49,7 @@ class ArticleListScreen extends Screen
 	public function commandBar(): iterable
 	{
 		return [
-			ModalToggle::make('Создать статью')->modal('createArticle')->method('create')
+			ModalToggle::make('Создать статью')->modal('createArticle')->method('create'),
 		];
 	}
 
@@ -67,7 +68,23 @@ class ArticleListScreen extends Screen
 				Input::make('title')->required()->title('Заголовок'),
 				TextArea::make('text')->required()->title('Текст'),
 				CheckBox::make('is_published')->title('Публикация'),
-			]))->title('Создание статьи')->applyButton('Создать')
+			]))->title('Создание статьи')->applyButton('Создать'),
+
+			Layout::modal('editArticle', Layout::rows([
+				Input::make('article.id')->type('hidden'),
+				DateTimer::make('article.date')->format('Y-m-d')->required()->title('Дата'),
+				Relation::make('article.category_id')->required()->fromModel(Category::class, 'title')->title('Категория'),
+				Input::make('article.title')->required()->title('Заголовок'),
+				TextArea::make('article.text')->required()->title('Текст'),
+				CheckBox::make('article.is_published')->title('Публикация'),
+			]))->async('asyncGetArticle')->title('Редактирование статьи')->applyButton('Редактировать')
+		];
+	}
+
+	public function asyncGetArticle(Article $article): array
+	{
+		return [
+			'article' => $article
 		];
 	}
 
@@ -79,5 +96,14 @@ class ArticleListScreen extends Screen
 
 		Article::create($data);
 		Toast::info('Статья создана');
+	}
+
+	public function update(AdminArticleEditRequest $request)
+	{
+		$data = $request->validated();
+		$data['article']['is_published'] = isset($data['article']['is_published']) ? 1 : 0;
+
+		Article::find($request->input('article.id'))->update($data['article']);
+		Toast::info('Статья обновлена');
 	}
 }

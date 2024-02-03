@@ -27,7 +27,7 @@ class SiteListTable extends Table
 	{
 		return [
 			TD::make('domain', 'Домен')->cantHide(),
-			TD::make('logo', 'Лого'),
+			// TD::make('logo', 'Лого')->defaultHidden(),
 			TD::make('created_at', 'Создан')->render(function (Site $site) {
 				return $site->created_at->format('d/m/Y H:i');
 			}),
