@@ -3,7 +3,7 @@
 namespace App\Orchid\Screens\Article;
 
 use App\Http\Requests\Admin\Article\AdminArticleCreateRequest;
-use App\Http\Requests\Admin\Article\AdminArticleEditRequest;
+use App\Http\Requests\Admin\Article\AdminArticleUpdateRquest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Orchid\Layouts\Article\ArticleListTable;
@@ -62,6 +62,7 @@ class ArticleListScreen extends Screen
 	{
 		return [
 			ArticleListTable::class,
+
 			Layout::modal('createArticle', Layout::rows([
 				DateTimer::make('date')->format('Y-m-d')->required()->title('Дата'),
 				Relation::make('category_id')->required()->fromModel(Category::class, 'title')->title('Категория'),
@@ -98,7 +99,7 @@ class ArticleListScreen extends Screen
 		Toast::info('Статья создана');
 	}
 
-	public function update(AdminArticleEditRequest $request)
+	public function update(AdminArticleUpdateRquest $request)
 	{
 		$data = $request->validated();
 		$data['article']['is_published'] = isset($data['article']['is_published']) ? 1 : 0;

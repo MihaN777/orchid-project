@@ -3,6 +3,7 @@
 namespace App\Orchid\Screens\Category;
 
 use App\Http\Requests\Admin\Category\AdminCategoryCreateRequest;
+use App\Http\Requests\Admin\Category\AdminCategoryUpdateRequest;
 use App\Models\Category;
 use App\Models\Site;
 use App\Orchid\Layouts\Category\CategoryListTable;
@@ -59,11 +60,26 @@ class CategoryListScreen extends Screen
 	{
 		return [
 			CategoryListTable::class,
+
 			Layout::modal('createCategory', Layout::rows([
 				Relation::make('site_id')->required()->fromModel(Site::class, 'domain')->title('Домен'),
 				Input::make('title')->required()->title('Название'),
 				CheckBox::make('is_published')->title('Публикация'),
-			]))->title('Создание категории')->applyButton('Создать')
+			]))->title('Создание категории')->applyButton('Создать'),
+
+			Layout::modal('editCategory', Layout::rows([
+				Input::make('category.id')->type('hidden'),
+				Relation::make('category.site_id')->required()->fromModel(Site::class, 'domain')->title('Домен'),
+				Input::make('category.title')->required()->title('Название'),
+				CheckBox::make('category.is_published')->title('Публикация'),
+			]))->async('asyncGetCategory')->title('Редактирование категории')->applyButton('Редактировать')
+		];
+	}
+
+	public function asyncGetCategory(Category $category): array
+	{
+		return [
+			'category' => $category
 		];
 	}
 
@@ -74,5 +90,14 @@ class CategoryListScreen extends Screen
 
 		Category::create($data);
 		Toast::info('Категория создана');
+	}
+
+	public function update(AdminCategoryUpdateRequest $request)
+	{
+		$data = $request->validated();
+		$data['category']['is_published'] = isset($data['category']['is_published']) ? 1 : 0;
+
+		Category::find($request->input('category.id'))->update($data['category']);
+		Toast::info('Категория обновлена');
 	}
 }
