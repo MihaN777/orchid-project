@@ -22,8 +22,8 @@ class AdminSiteCreateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'domain' => ['required', 'string', 'max:250'],
-			'logo' => ['required', 'file', 'image:jpg,png,svg', 'max:1024'],
+			'site.domain' => ['required', 'string', 'max:250'],
+			'site.logo' => ['required', 'file', 'image:jpg,png,svg', 'max:1024'],
 		];
 	}
 
@@ -33,16 +33,16 @@ class AdminSiteCreateRequest extends FormRequest
 			'required' => 'Поле :attribute обязательно для заполнения',
 			'file' => 'В поле :attribute задан не корректный файл',
 			'image' => 'В поле :attribute задано не корректное изображение',
-			'domain.max' => 'Превышено максимальное значение поля :attribute',
-			'logo.max' => 'Превышен размер загружаемого файла в поле :attribute',
+			'site.domain.max' => 'Превышено максимальное значение поля :attribute',
+			'site.logo.max' => 'Превышен размер загружаемого файла в поле :attribute',
 		];
 	}
 
 	public function attributes()
 	{
 		return [
-			'domain' => 'Домен',
-			'logo' => 'Лого',
+			'site.domain' => 'Домен',
+			'site.logo' => 'Лого',
 		];
 	}
 }

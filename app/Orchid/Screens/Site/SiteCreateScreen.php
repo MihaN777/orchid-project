@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Screens\Site;
 
-use App\Http\Requests\Admin\Site\AdminSiteUpdateRequest;
+use App\Http\Requests\Admin\Site\AdminSiteCreateRequest;
 use App\Models\Site;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +12,7 @@ use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
-class SiteEditScreen extends Screen
+class SiteCreateScreen extends Screen
 {
 	/**
 	 * @var Site
@@ -38,7 +38,7 @@ class SiteEditScreen extends Screen
 	 */
 	public function name(): ?string
 	{
-		return 'Редактирование сайта';
+		return 'Создание сайта';
 	}
 
 	/**
@@ -49,13 +49,9 @@ class SiteEditScreen extends Screen
 	public function commandBar(): iterable
 	{
 		return [
-			Button::make('Редактировать сайт')
+			Button::make('Создать сайт')
 				->icon('pencil')
-				->method('update'),
-
-			Button::make('Удалить')
-				->icon('trash')
-				->method('remove'),
+				->method('create')
 		];
 	}
 
@@ -73,6 +69,7 @@ class SiteEditScreen extends Screen
 					->title('Домен'),
 
 				Input::make('site.logo')
+					->required()
 					->type('file')
 					->acceptedFiles('.jpg, .png, .svg')
 					->title('Лого (jpg, png, svg)'),
@@ -80,35 +77,19 @@ class SiteEditScreen extends Screen
 		];
 	}
 
-	public function update(Site $site, AdminSiteUpdateRequest $request)
+	public function create(Site $site, AdminSiteCreateRequest $request)
 	{
 		$data = $request->validated();
-		$oldLogo = $site->logo;
+		$data['site']['logo'] = Storage::disk('public')->put(Site::LOGOS_PATH, $data['site']['logo']);
 
-		if (isset($data['site']['logo'])) {
-			$data['site']['logo'] = Storage::disk('public')->put(Site::LOGOS_PATH, $data['site']['logo']);
-		}
+		$site = Site::create($data['site']);
 
-		if (!$site->update($data['site'])) {
+		if (!$site || !($site instanceof Site)) {
 			deleteStorageFile($data['site']['logo']);
-			throw ValidationException::withMessages(['error' => 'Не удалось обновить данные']);
+			throw ValidationException::withMessages(['error' => 'Не удалось записать данные']);
 		}
 
-		deleteStorageFile($oldLogo);
-
-		Toast::info('Сайт обновлен');
-		return redirect()->route('platform.site.list');
-	}
-
-	public function remove(Site $site)
-	{
-		if (!$site->delete()) {
-			throw ValidationException::withMessages(['error' => 'Не удалось удалить сайт']);
-		}
-
-		deleteStorageFile($site->logo);
-
-		Toast::info('Сайт удален');
+		Toast::info('Сайт создан');
 		return redirect()->route('platform.site.list');
 	}
 }

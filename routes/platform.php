@@ -18,6 +18,7 @@ use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Site\SiteCreateScreen;
 use App\Orchid\Screens\Site\SiteEditScreen;
 use App\Orchid\Screens\Site\SiteListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
@@ -54,7 +55,7 @@ Route::screen('sites', SiteListScreen::class)
 Route::screen('sites', SiteListScreen::class)
 	->name('platform.site.list');
 
-Route::screen('site/create', SiteEditScreen::class)
+Route::screen('site/create', SiteCreateScreen::class)
 	->name('platform.site.create');
 
 Route::screen('site/{site?}/edit', SiteEditScreen::class)
@@ -73,21 +74,12 @@ Route::screen('category/{category?}/edit', CategoryEditScreen::class)
 // Articles
 Route::screen('articles', ArticleListScreen::class)
 	->name('platform.article.list');
-// ->breadcrumbs(fn (Trail $trail) => $trail
-// 	->parent('platform.index')
-// 	->push('Статьи'));
 
 Route::screen('article/create', ArticleEditScreen::class)
 	->name('platform.article.create');
-// ->breadcrumbs(fn (Trail $trail) => $trail
-// 	->parent('platform.article.list')
-// 	->push('Создать статью'));
 
 Route::screen('article/{article?}/edit', ArticleEditScreen::class)
 	->name('platform.article.edit');
-// ->breadcrumbs(fn (Trail $trail) => $trail
-// 	->parent('platform.article.list')
-// 	->push('Создание, редактирование'));
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
