@@ -1,0 +1,416 @@
+.header {
+    background-color: $--menu-bg-color;
+    color: $--menu-text-color;
+    height: 80px;
+
+    &__row {
+        @extend .myrow;
+        flex-wrap: nowrap;
+        height: 80px;
+    }
+
+    // ------------------------------------------------- col-logo
+
+    &__logo-col {
+        @include make-col(3);
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        transition: all 350ms ease;
+    }
+
+    &__logo-link {
+        transition: all 300ms ease;
+
+        &:hover {
+            filter: brightness(70%);
+        }
+    }
+
+    &__logo-img {
+        display: block;
+        width: 135px;
+    }
+
+    &__burger-btn {
+        display: none;
+        position: relative;
+        height: 30px;
+        width: 30px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: all 350ms ease;
+        z-index: 3;
+
+        &:active {
+            background-color: #111;
+        }
+
+        & span {
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            left: 0px;
+            background-color: $--menu-burger-line-color;
+            transition: transform 0.5s, opacity 0.5s, background-color 0.5s;
+
+            &:nth-child(1) {
+                transform: translateY(-10px);
+            }
+            &:nth-child(3) {
+                transform: translateY(10px);
+            }
+        }
+    }
+
+    .header.open &__burger-btn span {
+        background-color: rgb(238, 237, 237);
+    }
+
+    .header.open &__burger-btn span:nth-child(1) {
+        transform: translateY(0) rotate(45deg);
+    }
+
+    .header.open &__burger-btn span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .header.open &__burger-btn span:nth-child(3) {
+        transform: translateY(0) rotate(-45deg);
+    }
+
+    // ------------------------------------------------- col-menu
+
+    &__nav-col {
+        @include make-col(7);
+        display: flex;
+        align-items: center;
+        justify-content: end;
+    }
+
+    &__menu-list {
+        display: flex;
+        align-items: center;
+        column-gap: 50px;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+
+    &__menu-item {
+        //
+    }
+
+    &__menu-link {
+        font-size: 15px;
+        font-weight: 400;
+        transition: all 300ms ease;
+
+        &:hover {
+            color: $--menu-link-color;
+        }
+    }
+
+    // ------------------------------------------------- col-user
+
+    &__user-col {
+        @include make-col(2);
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        column-gap: 15px;
+    }
+
+    &__user-basket {
+        position: relative;
+    }
+
+    &__basket-link {
+        display: block;
+        height: 20px;
+        width: 20px;
+    }
+
+    &__basket-img {
+        height: 20px;
+        width: 20px;
+        transition: all 300ms ease;
+
+        &:hover {
+            filter: brightness(70%);
+        }
+    }
+
+    &__basket-count {
+        position: absolute;
+        height: 18px;
+        padding: 0px 8px;
+        background-color: #262626;
+        border: 1px solid white;
+        border-radius: 9px;
+        left: 10px;
+        bottom: 24px;
+        color: white;
+        font-size: 14px;
+        line-height: 13px;
+        font-weight: 400;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 300ms ease;
+
+        &_hidden {
+            display: none;
+        }
+
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+
+    &__user-menu {
+        position: relative;
+        height: 20px;
+        width: 20px;
+    }
+
+    &__user-img {
+        height: 20px;
+        width: 20px;
+        position: relative;
+        transition: all 300ms ease;
+
+        &:hover {
+            filter: brightness(70%);
+        }
+    }
+
+    // &__user-alert {
+    //     position: absolute;
+    //     width: 18px;
+    //     height: 18px;
+    //     left: 1px;
+    //     bottom: 24px;
+    //     color: black;
+    //     font-size: 16px;
+    //     font-weight: 500;
+    //     line-height: 15px;
+    //     background-color: white;
+    //     border-radius: 50%;
+    //     display: flex;
+    //     justify-content: center;
+    //     align-items: center;
+    //     cursor: pointer;
+    //     transition: all 350ms ease;
+
+    //     &:hover {
+    //         transform: scale(1.2);
+    //     }
+    // }
+
+    // ------- dropdown -------
+
+    .menu {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .list-reset {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .menu__item {
+        position: relative;
+        display: block;
+        height: 20px;
+        width: 20px;
+    }
+
+    .menu__item:not(:last-child) {
+        margin-right: 30px;
+    }
+
+    .menu__btn {
+        background-color: transparent;
+        outline: 0 solid transparent;
+        border: none;
+        height: 20px;
+        width: 20px;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .menu__btn--active {
+        // background-color: #ccdbf3;
+    }
+
+    .dropdown {
+        position: absolute;
+        right: 0px;
+        top: 64px;
+        width: 150px;
+        background-color: $--menu-bg-color;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        z-index: 3;
+        border-radius: 10px;
+    }
+
+    .dropdown__list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 5px;
+        margin: 0;
+        padding: 15px;
+        list-style: none;
+    }
+
+    .dropdown__item {
+        // line-height: 15px;
+    }
+
+    .dropdown--active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .dropdown__link {
+        display: block;
+        width: 100%;
+        font-size: 14px;
+        line-height: 13px;
+        font-weight: 400;
+        padding: 14px;
+        border-radius: 10px;
+        color: white;
+        transition: all 300ms ease;
+
+        &:hover {
+            background-color: #4c4c4c;
+        }
+    }
+
+    .dropdown__btn {
+        display: block;
+        width: 100%;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: white;
+        font-size: 14px;
+        line-height: 13px;
+        font-weight: 400;
+        text-align: left;
+        padding: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 300ms ease;
+
+        &:hover {
+            background-color: #4c4c4c;
+        }
+    }
+
+    // ---------------------- Media ------------------------
+
+    @include media-breakpoint-down(dt-xl) {
+        &__menu-link {
+            font-size: 14px;
+        }
+    }
+
+    @include media-breakpoint-down(dt) {
+        &__logo-col {
+            @include make-col(5);
+        }
+
+        &__nav-col {
+            @include make-col(2);
+        }
+
+        &__user-col {
+            @include make-col(5);
+        }
+
+        &__logo-link {
+            margin-left: 25px;
+        }
+
+        &__logo-img {
+            width: 114px;
+        }
+
+        &__burger-btn {
+            display: block;
+        }
+
+        &__nav {
+            position: absolute;
+            left: -330px;
+            top: 0px;
+            width: 330px;
+            background-color: $--menu-bg-color;
+            padding: 100px 60px 60px 95px;
+            transition: all 500ms ease;
+            z-index: 2;
+        }
+
+        .header.open &__nav {
+            transform: translateX(100%);
+        }
+
+        &__menu-list {
+            display: block;
+        }
+
+        &__menu-link {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    }
+
+    @include media-breakpoint-down(tab-xxl) {
+        &__logo-col {
+            @include make-col(6);
+        }
+
+        &__nav-col {
+            @include make-col(1);
+        }
+
+        &__user-col {
+            @include make-col(5);
+        }
+    }
+
+    @include media-breakpoint-down(tab-xl) {
+        &__logo-col {
+            @include make-col(7);
+        }
+
+        &__nav-col {
+            @include make-col(1);
+        }
+
+        &__user-col {
+            @include make-col(4);
+            column-gap: 30px;
+        }
+
+        &__logo-link {
+            margin-left: 20px;
+        }
+
+        &__logo-img {
+            width: 100px;
+        }
+    }
+}

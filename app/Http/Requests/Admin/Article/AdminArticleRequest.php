@@ -25,7 +25,7 @@ class AdminArticleRequest extends FormRequest
 			'article.date' => ['required', 'string', 'date_format:Y-m-d'],
 			'article.category_id' => ['required', 'integer', 'exists:categories,id'],
 			'article.title' => ['required', 'string', 'max:100'],
-			'article.text' => ['required', 'string', 'max:2000'],
+			'article.text' => ['required', 'string', 'max:20000'],
 			'article.is_published' => ['nullable', 'string'],
 		];
 	}

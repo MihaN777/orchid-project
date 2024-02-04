@@ -1,0 +1,58 @@
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+
+$grid-breakpoints: (
+    xs: 0,
+    mb-xxl: 425px,
+    tab: 500px,
+    tab-xl: 576px,
+    tab-xxl: 768px,
+    dt: 880px,
+    dt-xl: 1200px,
+    dt-xxl: 1290px,
+);
+
+$container-max-widths: (
+    mb-xxl: 425px,
+    tab: 500px,
+    tab-xl: 540px,
+    tab-xxl: 720px,
+    dt: 820px,
+    dt-xl: 1140px,
+    dt-xxl: 1224px,
+);
+
+@import "../../../../../../Frontend/(Libs)/Bootstrap-5.2.3/scss/functions";
+@import "../../../../../../Frontend/(Libs)/Bootstrap-5.2.3/scss/variables";
+@import "../../../../../../Frontend/(Libs)/Bootstrap-5.2.3/scss/mixins/breakpoints";
+@import "../../../../../../Frontend/(Libs)/Bootstrap-5.2.3/scss/mixins/container";
+@import "../../../../../../Frontend/(Libs)/Bootstrap-5.2.3/scss/mixins/grid";
+
+@mixin make-max-width-container(
+    $max-widths: $container-max-widths,
+    $breakpoints: $grid-breakpoints
+) {
+    @each $breakpoint, $max-width in $max-widths {
+        @include media-breakpoint-up($breakpoint, $breakpoints) {
+            max-width: $max-width;
+        }
+    }
+}
+
+.container {
+    @include make-container();
+    @include make-max-width-container();
+    // жестко задать максимальную ширину контейнера
+    // max-width: $--content-width;
+}
+
+.myrow {
+    @include make-row();
+    // горизонтальный и вертикальный
+    // отступ между блоками на маленьких экранах
+    // --bs-gutter-x: 1rem;
+    // --bs-gutter-y: 1rem;
+    & > * {
+        @include make-col-ready();
+    }
+}

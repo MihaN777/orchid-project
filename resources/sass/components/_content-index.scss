@@ -1,0 +1,11 @@
+.sites {
+    &__row {
+        @extend .myrow;
+        margin-top: 38px;
+        margin-bottom: 38px;
+    }
+
+    &__col {
+        @include make-col(4);
+    }
+}
