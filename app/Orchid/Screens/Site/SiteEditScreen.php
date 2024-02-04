@@ -5,29 +5,35 @@ namespace App\Orchid\Screens\Site;
 use App\Http\Requests\Admin\Site\AdminSiteCreateRequest;
 use App\Http\Requests\Admin\Site\AdminSiteUpdateRequest;
 use App\Models\Site;
-use App\Orchid\Layouts\Site\SiteListLayout;
 use App\Orchid\Layouts\Site\SiteListTable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
-class SiteListScreen extends Screen
+class SiteEditScreen extends Screen
 {
+	/**
+	 * @var Site
+	 */
+	public $site;
+
 	/**
 	 * Fetch data to be displayed on the screen.
 	 *
 	 * @return array
 	 */
-	public function query(): iterable
+	public function query(Site $site): iterable
 	{
 		return [
-			'sites' => Site::paginate(10)
+			// 'sites' => Site::paginate(10),
+			'site' => $site
 		];
 	}
 
@@ -38,7 +44,8 @@ class SiteListScreen extends Screen
 	 */
 	public function name(): ?string
 	{
-		return 'Сайты';
+		// return 'Сайты';
+		return $this->site->exists ? 'Редактирование сайта' : 'Создание сайта';
 	}
 
 	/**
@@ -50,9 +57,21 @@ class SiteListScreen extends Screen
 	{
 		return [
 			// ModalToggle::make('Создать сайт')->modal('createSite')->method('create'),
-			Link::make('Создать сайт')
+
+			Button::make('Создать сайт')
 				->icon('pencil')
-				->route('platform.site.create')
+				->method('createOrUpdate')
+				->canSee(!$this->site->exists),
+
+			Button::make('Редактировать сайт')
+				->icon('pencil')
+				->method('createOrUpdate')
+				->canSee($this->site->exists),
+
+			Button::make('Удалить')
+				->icon('trash')
+				->method('remove')
+				->canSee($this->site->exists),
 		];
 	}
 
@@ -64,7 +83,7 @@ class SiteListScreen extends Screen
 	public function layout(): iterable
 	{
 		return [
-			SiteListLayout::class,
+			// SiteListTable::class,
 
 			// Layout::modal('createSite', Layout::rows([
 			// 	Input::make('domain')->required()->title('Домен'),
@@ -86,7 +105,58 @@ class SiteListScreen extends Screen
 			// 		->acceptedFiles('.jpg, .png, .svg')
 			// 		->title('Лого (jpg, png, svg)'),
 			// ]))->async('asyncGetSite')->title('Редактирование сайта')->applyButton('Редактировать')
+
+			Layout::rows([
+				Input::make('site.domain')
+					->required()
+					->title('Домен'),
+
+				Input::make('site.logo')
+					->type('file')
+					->acceptedFiles('.jpg, .png, .svg')
+					->title('Лого (jpg, png, svg)'),
+			])
 		];
+	}
+
+	private function deleteLogo(?string $path)
+	{
+		if (
+			isset($path) &&
+			Storage::disk('public')->exists($path) &&
+			!Storage::disk('public')->delete($path)
+		) {
+			Log::error(SiteListScreen::class . " [deleteLogo]: Не удалось удалить логотип сайта ({$path})");
+		}
+	}
+
+	public function createOrUpdate(Site $site, Request $request)
+	{
+		$data = $request->toArray();
+		// $data = $request->validated();
+		// $data['site']['is_published'] = isset($data['site']['is_published']) ? 1 : 0;
+		// $data['site']['user_id'] = auth()->user()->id;
+
+		// TODO: Лого...
+
+		if (!$site->fill($data['site'])->save()) {
+			throw ValidationException::withMessages(['error' => 'Не удалось сохранить данные на сайт']);
+		}
+
+		Toast::info('Сайт создан');
+		return redirect()->route('platform.site.list');
+	}
+
+	public function remove(Site $site)
+	{
+		if (!$site->delete()) {
+			throw ValidationException::withMessages(['error' => 'Не удалось удалить сайт']);
+		}
+
+		// TODO: Удалить лого
+
+		Toast::info('Сайт удален');
+		return redirect()->route('platform.site.list');
 	}
 
 	// public function asyncGetSite(Site $site): array
@@ -94,17 +164,6 @@ class SiteListScreen extends Screen
 	// 	return [
 	// 		'site' => $site
 	// 	];
-	// }
-
-	// private function deleteLogo(?string $path)
-	// {
-	// 	if (
-	// 		isset($path) &&
-	// 		Storage::disk('public')->exists($path) &&
-	// 		!Storage::disk('public')->delete($path)
-	// 	) {
-	// 		Log::error(SiteListScreen::class . " [deleteLogo]: Не удалось удалить логотип сайта ({$path})");
-	// 	}
 	// }
 
 	// public function create(AdminSiteCreateRequest $request)

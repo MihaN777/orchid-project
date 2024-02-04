@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Article\ArticleEditScreen;
 use App\Orchid\Screens\Article\ArticleListScreen;
+use App\Orchid\Screens\Category\CategoryEditScreen;
 use App\Orchid\Screens\Category\CategoryListScreen;
 use App\Orchid\Screens\Examples\ExampleActionsScreen;
 use App\Orchid\Screens\Examples\ExampleCardsScreen;
@@ -16,6 +18,7 @@ use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Site\SiteEditScreen;
 use App\Orchid\Screens\Site\SiteListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
@@ -47,23 +50,44 @@ Route::screen('sites', SiteListScreen::class)
 			->push('Сайты');
 	});
 
+// Sites
+Route::screen('sites', SiteListScreen::class)
+	->name('platform.site.list');
+
+Route::screen('site/create', SiteEditScreen::class)
+	->name('platform.site.create');
+
+Route::screen('site/{site?}/edit', SiteEditScreen::class)
+	->name('platform.site.edit');
+
 // Categories
 Route::screen('categories', CategoryListScreen::class)
-	->name('platform.categories')
-	->breadcrumbs(function (Trail $trail) {
-		return $trail
-			->parent('platform.index')
-			->push('Категории');
-	});
+	->name('platform.category.list');
+
+Route::screen('category/create', CategoryEditScreen::class)
+	->name('platform.category.create');
+
+Route::screen('category/{category?}/edit', CategoryEditScreen::class)
+	->name('platform.category.edit');
 
 // Articles
 Route::screen('articles', ArticleListScreen::class)
-	->name('platform.articles')
-	->breadcrumbs(function (Trail $trail) {
-		return $trail
-			->parent('platform.index')
-			->push('Статьи');
-	});
+	->name('platform.article.list');
+// ->breadcrumbs(fn (Trail $trail) => $trail
+// 	->parent('platform.index')
+// 	->push('Статьи'));
+
+Route::screen('article/create', ArticleEditScreen::class)
+	->name('platform.article.create');
+// ->breadcrumbs(fn (Trail $trail) => $trail
+// 	->parent('platform.article.list')
+// 	->push('Создать статью'));
+
+Route::screen('article/{article?}/edit', ArticleEditScreen::class)
+	->name('platform.article.edit');
+// ->breadcrumbs(fn (Trail $trail) => $trail
+// 	->parent('platform.article.list')
+// 	->push('Создание, редактирование'));
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)

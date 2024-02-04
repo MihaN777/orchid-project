@@ -4,22 +4,18 @@ namespace App\Orchid\Layouts\Site;
 
 use App\Models\Site;
 use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Actions\ModalToggle;
-use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class SiteListTable extends Table
+class SiteListLayout extends Table
 {
-	/**
-	 * Data source.
-	 *
-	 * The name of the key to fetch it from the query.
-	 * The results of which will be elements of the table.
-	 *
-	 * @var string
-	 */
 	protected $target = 'sites';
+
+	protected static function makeImage(?string $path, int $width = 200): string
+	{
+		$img = asset("storage/{$path}");
+		return "<img src=\"{$img}\" style=\"width:{$width}px;\">";
+	}
 
 	/**
 	 * Get the table cells to be displayed.
@@ -32,9 +28,7 @@ class SiteListTable extends Table
 			TD::make('domain', 'Домен')->cantHide(),
 
 			TD::make('logo', 'Лого')->render(function (Site $site) {
-				// FIXME :)
-				$img = asset("storage/{$site->logo}");
-				return "<img src=\"{$img}\" style=\"width:200px;\">";
+				return self::makeImage($site->logo);
 			}),
 
 			TD::make('created_at', 'Создан')->render(function (Site $site) {
@@ -46,13 +40,9 @@ class SiteListTable extends Table
 			}),
 
 			TD::make('action', 'Действия')->render(function (Site $site) {
-				return ModalToggle::make('Редактировать')
-					->modal('editSite')
-					->method('update')
-					->modalTitle('Редактирование сайта: ' . $site->domain)
-					->asyncParameters([
-						'site' => $site->id
-					]);
+				return Link::make(__('Edit'))
+					->route('platform.site.edit', $site->id)
+					->icon('bs.pencil');
 			})->cantHide(),
 		];
 	}

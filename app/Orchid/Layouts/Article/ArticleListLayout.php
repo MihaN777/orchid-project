@@ -4,27 +4,14 @@ namespace App\Orchid\Layouts\Article;
 
 use App\Models\Article;
 use Illuminate\Support\Carbon;
-use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class ArticleListTable extends Table
+class ArticleListLayout extends Table
 {
-	/**
-	 * Data source.
-	 *
-	 * The name of the key to fetch it from the query.
-	 * The results of which will be elements of the table.
-	 *
-	 * @var string
-	 */
 	protected $target = 'articles';
 
-	/**
-	 * Get the table cells to be displayed.
-	 *
-	 * @return TD[]
-	 */
 	protected function columns(): iterable
 	{
 		return [
@@ -57,13 +44,9 @@ class ArticleListTable extends Table
 			}),
 
 			TD::make('action', 'Действия')->render(function (Article $article) {
-				return ModalToggle::make('Редактировать')
-					->modal('editArticle')
-					->method('update')
-					->modalTitle('Редактирование статьи: ' . $article->title)
-					->asyncParameters([
-						'article' => $article->id
-					]);
+				return Link::make(__('Edit'))
+					->route('platform.article.edit', $article->id)
+					->icon('bs.pencil');
 			})->cantHide(),
 		];
 	}
