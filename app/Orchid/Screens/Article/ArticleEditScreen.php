@@ -3,6 +3,7 @@
 namespace App\Orchid\Screens\Article;
 
 use App\Http\Requests\Admin\Article\AdminArticleRequest;
+use App\Jobs\RedactorNotificationJob;
 use App\Models\Article;
 use App\Models\Category;
 use Illuminate\Validation\ValidationException;
@@ -107,11 +108,19 @@ class ArticleEditScreen extends Screen
 	public function createOrUpdate(Article $article, AdminArticleRequest $request)
 	{
 		$data = $request->validated();
-		$data['article']['is_published'] = isset($data['article']['is_published']) ? 1 : 0;
 		$data['article']['user_id'] = auth()->user()->id;
+		$isPublished = $data['article']['is_published'] = isset($data['article']['is_published']) ? true : false;
 
 		if (!$article->fill($data['article'])->save()) {
 			throw ValidationException::withMessages(['error' => 'Не удалось сохранить данные на статью']);
+		}
+
+		// Рассылка увидомлений через очериди
+		if ($isPublished) {
+			// Email: smtp в .ENV не задан, складируется в log
+			RedactorNotificationJob::dispatch($data['article']['title'], route('article', $article->id));
+
+			// TODO: Telegram...
 		}
 
 		Toast::info('Статья создана');

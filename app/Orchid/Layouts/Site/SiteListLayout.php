@@ -3,6 +3,7 @@
 namespace App\Orchid\Layouts\Site;
 
 use App\Models\Site;
+use App\Orchid\Tags\Tag;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -10,12 +11,6 @@ use Orchid\Screen\TD;
 class SiteListLayout extends Table
 {
 	protected $target = 'sites';
-
-	protected static function makeImage(?string $path, int $width = 200): string
-	{
-		$img = asset("storage/{$path}");
-		return "<img src=\"{$img}\" style=\"width:{$width}px;\">";
-	}
 
 	/**
 	 * Get the table cells to be displayed.
@@ -28,7 +23,7 @@ class SiteListLayout extends Table
 			TD::make('domain', 'Домен')->cantHide(),
 
 			TD::make('logo', 'Лого')->render(function (Site $site) {
-				return self::makeImage($site->logo);
+				return Tag::IMG(asset("storage/{$site->logo}"), 'width:200px;');
 			}),
 
 			TD::make('created_at', 'Создан')->render(function (Site $site) {

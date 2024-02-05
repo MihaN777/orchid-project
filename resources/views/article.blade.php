@@ -75,7 +75,7 @@
 				</div>
 
 				<p style="font-size: 18px; margin-top: 10px;">
-					{{ $article->text }}
+					{!! nl2br(e($article->text)) !!}
 				</p>
 			</div>
 		</div>
